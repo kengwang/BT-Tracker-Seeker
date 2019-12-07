@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29519.87
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BT-Tracker-Seeker", "BT-Tracker-Seeker\BT-Tracker-Seeker.csproj", "{AAD4A4B8-BE6F-4D49-8A42-B94131E7C99E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AAD4A4B8-BE6F-4D49-8A42-B94131E7C99E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AAD4A4B8-BE6F-4D49-8A42-B94131E7C99E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AAD4A4B8-BE6F-4D49-8A42-B94131E7C99E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AAD4A4B8-BE6F-4D49-8A42-B94131E7C99E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {61391957-BEA3-4AE8-B5C8-4DD2CBA555BB}
+	EndGlobalSection
+EndGlobal
