@@ -55,6 +55,7 @@
             "TrackersListCollection - best",
             "trackerslist - all",
             "trackerslist - best",
+            "trackerslist - ip",
             "NewTrackon",
             "OpenTracker"});
             this.checkedListBox1.Location = new System.Drawing.Point(18, 36);

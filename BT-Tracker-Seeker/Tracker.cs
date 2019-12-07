@@ -43,6 +43,7 @@ namespace BT_Tracker_Seeker
             "https://trackerslist.com/best.txt" ,//XIU2 - TrackersListCollection - 优
             "https://raw.githubusercontent.com/ngosang/trackerslist/master/trackers_all.txt",//trackerslist - 全部
             "https://raw.githubusercontent.com/ngosang/trackerslist/master/trackers_best.txt",//trackerslist - 最优
+            "https://raw.githubusercontent.com/ngosang/trackerslist/master/trackers_all_ip.txt",//trackerslist - 全 - IP
             "https://newtrackon.com/api/stable?include_ipv6_only_trackers=0",//NewTrackon
             "https://raw.githubusercontent.com/1265578519/OpenTracker/master/tracker.txt",//OpenTracker
         };
