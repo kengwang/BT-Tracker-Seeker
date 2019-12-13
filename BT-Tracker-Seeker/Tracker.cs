@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace BT_Tracker_Seeker
@@ -14,7 +13,7 @@ namespace BT_Tracker_Seeker
     {
         public string trackerurl;
         public bool useable = false;
-        
+        public string status = "未检测";
     }
 
     class DistinctItemComparer : IEqualityComparer<TrackerInfo>
@@ -104,7 +103,6 @@ namespace BT_Tracker_Seeker
         public static void TrackerDistinct()
         {//英语不好,名字不好定
             trackerlist = trackerlist.Distinct(new DistinctItemComparer()).ToList();
-
         }
 
 
@@ -124,11 +122,83 @@ namespace BT_Tracker_Seeker
             return trackerlist;
         }
 
-        public static bool CheckTracker(string tracker)
+        public static void CheckTrackers()
         {
-            Uri uri = new Uri(tracker);
-            Console.WriteLine(tracker + " 到 " + uri.Host);
-            return PingHost(uri.Host);
+            for (int i = 0; i < GetTrackerCount(); i++)
+            {
+                CheckTracker(trackerlist[i]);
+            }
+        }
+
+        public static void CheckTracker(TrackerInfo tracker)
+        {/*
+             * 考虑到由于一些主机禁止ping会导致判断错误并且ping也很慢!
+             * 所以直接检测announce的返回值是否为502
+             * 旧方法注释保留
+             * 
+             * Uri uri = new Uri(tracker);
+             * Console.WriteLine(tracker + " 到 " + uri.Host);
+             * return PingHost(uri.Host);
+            */
+            string cb = GetTrackerCallback(tracker.trackerurl);
+            tracker.status = cb;
+            tracker.useable = cb == "可用";
+
+        }
+
+        private static string GetTrackerCallback(string site)
+        {
+            try
+            {
+                Uri uri = new Uri(site);
+                if (uri.Scheme != "udp")
+                {
+                    HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create(site);
+                    webRequest.Timeout = 4000;
+                    // Sends the HttpWebRequest and waits for a response.
+                    try
+                    {
+                        HttpWebResponse httpWebResponse = (HttpWebResponse)webRequest.GetResponse();
+                        if (httpWebResponse.StatusCode == HttpStatusCode.BadGateway || httpWebResponse.StatusCode == HttpStatusCode.BadRequest)
+                        {
+                            return "可用";
+                        }
+                    }
+                    catch (WebException e)
+                    {
+                        if (e.Status == WebExceptionStatus.Timeout)
+                        {
+                            Console.WriteLine("{0} : {1}", site, "超时");
+                            return "超时";
+                        }
+                        if (e.Status != WebExceptionStatus.ProtocolError)
+                        {
+                            return "错误";
+                        }
+                        HttpStatusCode code = ((HttpWebResponse)e.Response).StatusCode;
+
+                        if (code == HttpStatusCode.BadRequest || code == HttpStatusCode.BadGateway)
+                        {
+                            return "可用";
+                        }
+                        else
+                        {
+                            Console.WriteLine("{0} : {1}", site, code.ToString());
+                            return code.ToString();
+                        }
+
+                    }
+
+                }
+                Console.WriteLine("检测到暂不支持的协议: " + uri.Scheme);
+                return "检测失败";
+            }
+            catch (Exception e)
+            {
+                return "检测错误";
+            }
+
+
         }
 
         public static int GetAvailibleNum()

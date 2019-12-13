@@ -56,7 +56,7 @@ namespace BT_Tracker_Seeker
                 ListViewItem item = new ListViewItem();
                 item.SubItems.Clear();
                 item.SubItems[0].Text = tracker.trackerurl;
-                item.SubItems.Add(tracker.useable ? "可用" : "不可用");
+                item.SubItems.Add(tracker.status);
                 TrackerListBox.Items.Add(item);
             }
         }
@@ -65,24 +65,7 @@ namespace BT_Tracker_Seeker
         {
             MessageBox.Show("该操作可能会耗时许久,请耐心等待,不要关闭程序");
             Status.Text = "正在检测可用性,可能会出现无响应,请不要退出";
-            int n = 0;
-            List<TrackerInfo> trackerlist = Tracker.GetTrackerList();
-            for (int i = 0; i < Tracker.GetTrackerCount(); i++)
-            {
-                string tracker = trackerlist[i].trackerurl;
-
-                if (Tracker.CheckTracker(tracker))
-                {
-                    n++;
-                    trackerlist[i].useable = true;
-                }
-                else
-                {
-                    trackerlist[i].useable = false;
-                }
-            }
-
-
+            Tracker.CheckTrackers();
             MessageBox.Show("检测完成,一共:" + Tracker.GetAvailibleNum());
 
         }
