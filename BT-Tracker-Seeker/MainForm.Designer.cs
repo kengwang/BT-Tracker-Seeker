@@ -1,4 +1,6 @@
-﻿namespace BT_Tracker_Seeker
+﻿using System;
+
+namespace BT_Tracker_Seeker
 {
     partial class MainForm
     {
@@ -43,10 +45,7 @@
             this.button4 = new System.Windows.Forms.Button();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
-            this.checkBox3 = new System.Windows.Forms.CheckBox();
-            this.checkBox4 = new System.Windows.Forms.CheckBox();
-            this.checkBox5 = new System.Windows.Forms.CheckBox();
-            this.label3 = new System.Windows.Forms.Label();
+            this.button5 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // checkedListBox1
@@ -61,7 +60,8 @@
             "trackerslist - best",
             "trackerslist - ip",
             "NewTrackon",
-            "OpenTracker"});
+            "OpenTracker",
+            "icoa"});
             this.checkedListBox1.Location = new System.Drawing.Point(18, 36);
             this.checkedListBox1.Name = "checkedListBox1";
             this.checkedListBox1.Size = new System.Drawing.Size(201, 196);
@@ -172,7 +172,7 @@
             // 
             this.button4.Location = new System.Drawing.Point(21, 450);
             this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(105, 54);
+            this.button4.Size = new System.Drawing.Size(83, 54);
             this.button4.TabIndex = 10;
             this.button4.Text = "输出tracker";
             this.button4.UseVisualStyleBackColor = true;
@@ -198,53 +198,22 @@
             this.checkBox2.Text = "转为aria2";
             this.checkBox2.UseVisualStyleBackColor = true;
             // 
-            // checkBox3
+            // button5
             // 
-            this.checkBox3.AutoSize = true;
-            this.checkBox3.Location = new System.Drawing.Point(135, 450);
-            this.checkBox3.Name = "checkBox3";
-            this.checkBox3.Size = new System.Drawing.Size(84, 16);
-            this.checkBox3.TabIndex = 13;
-            this.checkBox3.Text = "http/https";
-            this.checkBox3.UseVisualStyleBackColor = true;
-            // 
-            // checkBox4
-            // 
-            this.checkBox4.AutoSize = true;
-            this.checkBox4.Location = new System.Drawing.Point(135, 470);
-            this.checkBox4.Name = "checkBox4";
-            this.checkBox4.Size = new System.Drawing.Size(42, 16);
-            this.checkBox4.TabIndex = 14;
-            this.checkBox4.Text = "udp";
-            this.checkBox4.UseVisualStyleBackColor = true;
-            // 
-            // checkBox5
-            // 
-            this.checkBox5.AutoSize = true;
-            this.checkBox5.Location = new System.Drawing.Point(135, 488);
-            this.checkBox5.Name = "checkBox5";
-            this.checkBox5.Size = new System.Drawing.Size(72, 16);
-            this.checkBox5.TabIndex = 15;
-            this.checkBox5.Text = "其他协议";
-            this.checkBox5.UseVisualStyleBackColor = true;
-            // 
-            // label3
-            // 
-            this.label3.Location = new System.Drawing.Point(128, 445);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(90, 58);
-            this.label3.TabIndex = 16;
-            this.label3.Text = "该标签下方功能建设中!";
+            this.button5.Location = new System.Drawing.Point(110, 454);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(98, 49);
+            this.button5.TabIndex = 13;
+            this.button5.Text = "手动添加Tracker ->\r\n换行分割";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 611);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.checkBox5);
-            this.Controls.Add(this.checkBox4);
-            this.Controls.Add(this.checkBox3);
+            this.Controls.Add(this.button5);
             this.Controls.Add(this.checkBox2);
             this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.button4);
@@ -262,6 +231,7 @@
             this.MaximizeBox = false;
             this.Name = "MainForm";
             this.Text = "BT Tracker Seeker";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -284,10 +254,7 @@
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.CheckBox checkBox2;
-        private System.Windows.Forms.CheckBox checkBox3;
-        private System.Windows.Forms.CheckBox checkBox4;
-        private System.Windows.Forms.CheckBox checkBox5;
-        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Button button5;
     }
 }
 

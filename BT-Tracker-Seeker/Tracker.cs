@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
 using System.Windows.Forms;
@@ -46,6 +45,7 @@ namespace BT_Tracker_Seeker
             "https://raw.githubusercontent.com/ngosang/trackerslist/master/trackers_all_ip.txt",//trackerslist - 全 - IP
             "https://newtrackon.com/api/stable?include_ipv6_only_trackers=0",//NewTrackon
             "https://raw.githubusercontent.com/1265578519/OpenTracker/master/tracker.txt",//OpenTracker
+            "http://newtab.tysv.top:88/tracker-icoa.php"//dns.icoa.cn/tracker
         };
         public static bool checking = false;
 
@@ -139,7 +139,7 @@ namespace BT_Tracker_Seeker
         {
             string cb = GetTrackerCallback(tracker.trackerurl);
             tracker.status = cb;
-            tracker.useable = cb == "可用";
+            tracker.useable = (cb == "可用");
         }
 
         private static string GetTrackerCallback(string site)
@@ -169,7 +169,7 @@ namespace BT_Tracker_Seeker
                         }
                         if (e.Status != WebExceptionStatus.ProtocolError)
                         {
-                            return "错误";
+                            return "协议错误";
                         }
                         HttpStatusCode code = ((HttpWebResponse)e.Response).StatusCode;
 
@@ -200,7 +200,7 @@ namespace BT_Tracker_Seeker
                     {
                         if (e.SocketErrorCode == SocketError.Success)
                         {
-                            Console.WriteLine("{0} ({3}) : {1}", site, "可用", uri.Host);
+                            Console.WriteLine("{0} ( {2} ) : {1}", site, "可用", uri.Host);
                             return "可用";
                         }
                         else
@@ -218,12 +218,37 @@ namespace BT_Tracker_Seeker
                 }
                 return "逻辑性失败: " + uri.Scheme;
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return "检测错误";
+                return e.Message;
             }
 
 
+        }
+
+        public static bool AddRegularTracker(string tracker)
+        {
+            if (tracker.Length >= 1)
+            {
+                TrackerInfo ti = new TrackerInfo();
+                ti.trackerurl = tracker;
+                trackerlist.Add(ti);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static int GetTotalNum()
+        {
+            return trackerlist.Count;
+        }
+
+        public static List<TrackerInfo> GetAvalibleTrackers()
+        {
+            return trackerlist;
         }
 
         public static int GetAvailibleNum()

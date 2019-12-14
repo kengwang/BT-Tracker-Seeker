@@ -1,12 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace BT_Tracker_Seeker
@@ -49,6 +44,7 @@ namespace BT_Tracker_Seeker
 
         private void button2_Click(object sender, EventArgs e)
         {
+            int a = TrackerListBox.Items.IndexOf(TrackerListBox.FocusedItem);
             TrackerListBox.Items.Clear();
             List<TrackerInfo> trackers = Tracker.GetTrackerList();
             foreach (TrackerInfo tracker in trackers)
@@ -57,7 +53,22 @@ namespace BT_Tracker_Seeker
                 item.SubItems.Clear();
                 item.SubItems[0].Text = tracker.trackerurl;
                 item.SubItems.Add(tracker.status);
+                if (tracker.status == "可用")
+                {
+                    item.ForeColor = Color.White;
+                    item.BackColor = Color.Green;
+                }
+                else if (tracker.status != "未检测")
+                {
+                    item.ForeColor = Color.White;
+                    item.BackColor = Color.Red;
+                }
                 TrackerListBox.Items.Add(item);
+            }
+            if (a != -1)
+            {
+                TrackerListBox.Items[a].Selected = true;
+                TrackerListBox.EnsureVisible(a);
             }
         }
 
@@ -78,15 +89,38 @@ namespace BT_Tracker_Seeker
         private void button4_Click(object sender, EventArgs e)
         {
             TrackerInfo tracker = new TrackerInfo();
-            List<TrackerInfo> trackers = Tracker.GetAvailibleTrackers();
+
             TrackerListOutput.Text = "";
             int n = 0;
-            for (int i = 0; i < Tracker.GetAvailibleNum(); i++)
+            if (!checkBox1.Checked)
             {
-                tracker = trackers[i];
-
-                if (tracker.useable || checkBox1.Checked)
+                List<TrackerInfo> trackers = Tracker.GetAvalibleTrackers();
+                for (int i = 0; i < Tracker.GetTotalNum(); i++)
                 {
+                    tracker = trackers[i];
+
+                    if (tracker.status == "可用")
+                    {
+                        n++;
+                        if (checkBox2.Checked)
+                        {
+                            TrackerListOutput.Text += tracker.trackerurl + ",";
+                        }
+                        else
+                        {
+                            TrackerListOutput.Text += tracker.trackerurl + "\r\n";
+                        }
+
+                    }
+
+                }
+            }
+            else
+            {
+                List<TrackerInfo> trackers = Tracker.GetAvalibleTrackers();
+                for (int i = 0; i < Tracker.GetTotalNum(); i++)
+                {
+                    tracker = trackers[i];
                     n++;
                     if (checkBox2.Checked)
                     {
@@ -96,18 +130,31 @@ namespace BT_Tracker_Seeker
                     {
                         TrackerListOutput.Text += tracker.trackerurl + "\r\n";
                     }
-
                 }
-
             }
+
             MessageBox.Show("输出完成,一共:" + n.ToString());
 
         }
 
-        private void checkBox5_CheckedChanged(object sender, EventArgs e)
+        private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            checkBox3.Checked = checkBox5.Checked;
-            checkBox4.Checked = checkBox5.Checked;
+            Environment.Exit(0);
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            int n = 0;
+            string[] trackers = TrackerListOutput.Text.Split(new Char[] { '\r', '\n' }, StringSplitOptions.None);
+            foreach (string tracker in trackers)
+            {
+                if (Tracker.AddRegularTracker(tracker))
+                {
+                    n++;
+                }
+
+            }
+            MessageBox.Show("成功添加 " + n.ToString() + "个");
         }
     }
 }
