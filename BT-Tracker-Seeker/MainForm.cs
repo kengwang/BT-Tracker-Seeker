@@ -63,11 +63,16 @@ namespace BT_Tracker_Seeker
 
         private void button3_Click(object sender, EventArgs e)
         {
+            if (Tracker.checking)
+            {
+                MessageBox.Show("正在检测中 请不要重复点击 当前检测到" + Tracker.GetAvailibleNum().ToString() + "个可用");
+                return;
+            }
             MessageBox.Show("该操作可能会耗时许久,请耐心等待,不要关闭程序");
-            Status.Text = "正在检测可用性,可能会出现无响应,请不要退出";
-            Tracker.CheckTrackers();
-            MessageBox.Show("检测完成,一共:" + Tracker.GetAvailibleNum());
-
+            Status.Text = "正在检测可用性,可能会耗时许久";
+            //采用多线程的方法 不阻塞主线程导致无响应
+            Thread thread = new Thread(new ThreadStart(Tracker.CheckTrackers));
+            thread.Start();
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -79,7 +84,7 @@ namespace BT_Tracker_Seeker
             for (int i = 0; i < Tracker.GetAvailibleNum(); i++)
             {
                 tracker = trackers[i];
-                
+
                 if (tracker.useable || checkBox1.Checked)
                 {
                     n++;
@@ -99,6 +104,10 @@ namespace BT_Tracker_Seeker
 
         }
 
-
+        private void checkBox5_CheckedChanged(object sender, EventArgs e)
+        {
+            checkBox3.Checked = checkBox5.Checked;
+            checkBox4.Checked = checkBox5.Checked;
+        }
     }
 }

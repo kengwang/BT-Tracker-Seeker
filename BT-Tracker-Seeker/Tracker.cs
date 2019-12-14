@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using System.Text;
 using System.Windows.Forms;
 
@@ -46,6 +47,7 @@ namespace BT_Tracker_Seeker
             "https://newtrackon.com/api/stable?include_ipv6_only_trackers=0",//NewTrackon
             "https://raw.githubusercontent.com/1265578519/OpenTracker/master/tracker.txt",//OpenTracker
         };
+        public static bool checking = false;
 
         public static void CleanTrackers()
         {
@@ -124,26 +126,20 @@ namespace BT_Tracker_Seeker
 
         public static void CheckTrackers()
         {
+            checking = true;
             for (int i = 0; i < GetTrackerCount(); i++)
             {
                 CheckTracker(trackerlist[i]);
             }
+            checking = false;
+            MessageBox.Show("检测完成,一共:" + Tracker.GetAvailibleNum());
         }
 
         public static void CheckTracker(TrackerInfo tracker)
-        {/*
-             * 考虑到由于一些主机禁止ping会导致判断错误并且ping也很慢!
-             * 所以直接检测announce的返回值是否为502
-             * 旧方法注释保留
-             * 
-             * Uri uri = new Uri(tracker);
-             * Console.WriteLine(tracker + " 到 " + uri.Host);
-             * return PingHost(uri.Host);
-            */
+        {
             string cb = GetTrackerCallback(tracker.trackerurl);
             tracker.status = cb;
             tracker.useable = cb == "可用";
-
         }
 
         private static string GetTrackerCallback(string site)
@@ -151,7 +147,7 @@ namespace BT_Tracker_Seeker
             try
             {
                 Uri uri = new Uri(site);
-                if (uri.Scheme != "udp")
+                if (uri.Scheme == "http" || uri.Scheme == "https")
                 {
                     HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create(site);
                     webRequest.Timeout = 4000;
@@ -190,10 +186,39 @@ namespace BT_Tracker_Seeker
                     }
 
                 }
-                Console.WriteLine("检测到暂不支持的协议: " + uri.Scheme);
-                return "检测失败";
+                else if (uri.Scheme == "udp")
+                {
+                    try
+                    {
+                        UdpClient udpc = new UdpClient();
+                        udpc.Connect(uri.Host, uri.Port);
+                        Byte[] sendBytes = Encoding.ASCII.GetBytes("hash");
+                        udpc.Send(sendBytes, sendBytes.Length);
+                        return "可用";
+                    }
+                    catch (SocketException e)
+                    {
+                        if (e.SocketErrorCode == SocketError.Success)
+                        {
+                            Console.WriteLine("{0} ({3}) : {1}", site, "可用", uri.Host);
+                            return "可用";
+                        }
+                        else
+                        {
+                            Console.WriteLine("{0} : {1}", site, e.Message);
+                            return "UDP失败";
+                        }
+                    }
+
+                }
+                else
+                {
+                    Console.WriteLine("检测到暂不支持的协议: " + uri.Scheme);
+                    return "不支持检测";
+                }
+                return "逻辑性失败: " + uri.Scheme;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return "检测错误";
             }
@@ -215,7 +240,7 @@ namespace BT_Tracker_Seeker
         }
 
         public static List<TrackerInfo> GetAvailibleTrackers()
-        {
+        {//0 - 全部,1 - Http/https,2 - udp,3. - 未知协议
             List<TrackerInfo> tal = new List<TrackerInfo>();
             foreach (TrackerInfo ti in trackerlist)
             {
@@ -225,42 +250,6 @@ namespace BT_Tracker_Seeker
                 }
             }
             return tal;
-        }
-
-        //来源 - https://blog.csdn.net/weixin_42032900/article/details/81186139
-        private static bool PingHost(string nameOrAddress)
-        {
-            Ping pingSender = new Ping();
-            //调用同步 send 方法发送数据,将返回结果保存至PingReply实例
-
-            try
-            {
-                PingReply reply = pingSender.Send(hostNameOrAddress: nameOrAddress, timeout: 120);
-                if (reply.Status == IPStatus.Success)
-                {
-                    return true;
-                    /*
-                    Console.WriteLine("当前在线，已ping通！");
-
-                    StringBuilder sbuilder = new StringBuilder();
-                    sbuilder.AppendLine(string.Format("答复的主机地址: {0} ", reply.Address.ToString()));
-                    sbuilder.AppendLine(string.Format("往返时间: {0} ", reply.RoundtripTime));
-                    sbuilder.AppendLine(string.Format("生存时间（TTL）: {0} ", reply.Options.Ttl));
-                    sbuilder.AppendLine(string.Format("是否控制数据包的分段: {0} ", reply.Options.DontFragment));
-                    sbuilder.AppendLine(string.Format("缓冲区大小: {0} ", reply.Buffer.Length));
-                    Console.WriteLine(sbuilder.ToString());
-                    */
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            catch (PingException exp)
-            {
-                Console.WriteLine(nameOrAddress + ": " + exp.Message);
-                return false;
-            }
         }
 
 
